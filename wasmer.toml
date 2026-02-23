@@ -1,0 +1,27 @@
+# Sorry for the horrible build. This depends on having buildscripts with `make pkgs/cpython.sysroot` and `make pkgs/python-base-webc.lib` in an adjacent directory. 
+# The sl binary is then built with wasix-clang:
+# export WASIX_SYSROOT=/home/lennart/Documents/build-scripts/pkgs/cpython.sysroot
+# wasix-clang -I$(pwd)/../build-scripts/pkgs/cpython.sysroot/usr/local/include/ncurses/ -lncurses sl.c -o sl.wasm
+[package]
+name = "wasmer/sl"
+version = "0.1.0"
+entrypoint = "sl"
+
+[fs]
+"/usr/local/share/terminfo" = "../build-scripts/pkgs/python-base-webc.lib/root/usr/local/share/terminfo"
+
+[[module]]
+name = "sl"
+source = "./sl.wasm"
+abi = "wasi"
+
+[module.interfaces]
+wasi = "0.1.0-unstable"
+
+[[command]]
+name = "sl"
+module = "sl"
+runner = "wasi"
+
+[command.annotations.wasi]
+env = ["TERM=xterm-256color"]
